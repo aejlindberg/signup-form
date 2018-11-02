@@ -25,7 +25,7 @@ handlePassword = event => {
 }
 
 handleSubmit = event => {
-  event.preventDefault()   //prevents the default behavior
+  event.preventDefault()   //prevents the default behavior of submit
 
   fetch("http://localhost:8080/users", {
     method: "POST",
@@ -46,7 +46,7 @@ handleSubmit = event => {
     }
   })
   .catch(err => {
-    console.log(err, "ERROR")
+    console.log("ERROR", err)
   })
 }
 

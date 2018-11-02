@@ -27,11 +27,11 @@ mongoose.connection.once("open", () => console.log("Connected to mongodb"))
 //
 // Define a model here.
 const User = mongoose.model("User", {
-  username: "String",
-  email: "String",
-  password: "String",
-  accessToken: {
-    type: "String",
+  username: String,
+  email: String,
+  password: String,
+  token: {
+    type: String,
     default: () => uuid() }
 })
 
@@ -53,11 +53,18 @@ app.get("/users", (req, res) => {
   })
 })
 
+app.get("/users/:id", (req, res) => {
+  res.json({
+    requestingUserId: req.params.id
+  })
+})
+
 app.post("/users", (req, res) => {
+  const encryptedPassword = bcrypt.hashSync(req.body.password)
   const newUser = new User({
     username: req.body.username,
     email: req.body.email,
-    password: req.body.password
+    password: encryptedPassword
   })
   newUser.save()
     .then(() => {
@@ -65,6 +72,21 @@ app.post("/users", (req, res) => {
     })
     .catch(err => {
       res.status(400).json({ created: false, error: err })
+    })
+})
+
+app.post("/sessions", (req, res) => {
+  // * find the user (based on username)
+  // * encrypt the password
+  // * check the encrypted password against the user's password
+  // * return the user's token if everything was good or errors
+  User.findOne({ username: req.body.username })
+    .then(user => {
+      if (user && bcrypt.compareSync(req.body.password, user.password)) {
+        res.json({ message: "Success!", token: user.token, userId: user.id })
+      } else {
+        res.status(401).json({ message: "Authentication failure" })
+      }
     })
 })
 
