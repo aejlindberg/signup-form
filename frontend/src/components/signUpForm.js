@@ -1,4 +1,5 @@
 import React from "react"
+import "../index.scss"
 
 class SignUpForm extends React.Component {
 
@@ -52,6 +53,7 @@ handleSubmit = event => {
   render() {
     return (
       <div className="wrapper">
+        <h1>Sign up</h1>
         <form id="signUpForm" className="signUpForm" onSubmit={this.handleSubmit}>
           <input
             type="text"

@@ -1,5 +1,7 @@
 import React from "react"
 import SignUpForm from "./signUpForm"
+import LogInForm from "./logInForm"
+import "../index.scss"
 
 class App extends React.Component {
 
@@ -7,6 +9,7 @@ class App extends React.Component {
     return (
       <div>
         <SignUpForm />
+        <LogInForm />
       </div>
     )
   }
