@@ -27,11 +27,19 @@ mongoose.connection.once("open", () => console.log("Connected to mongodb"))
 //
 // Define a model here.
 const User = mongoose.model("User", {
-  username: String,
-  email: String,
-  password: String,
-  token: {
+  username: {
     type: String,
+    unique: true
+  },
+  email: {
+    type: String,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  token: { type: String,
     default: () => uuid() }
 })
 
@@ -88,6 +96,27 @@ app.post("/sessions", (req, res) => {
         res.status(401).json({ message: "Authentication failure" })
       }
     })
+    .catch(err => {
+      res.json(err)
+    })
 })
 
-app.listen(8080, () => console.log("Products API listening on port 8080!"))
+const authenticateUser = (req, res, next) => {
+  User.findById(req.params.id)
+    .then(user => {
+      if (user.token === req.headers.token) {
+        req.user = user
+        next()
+      } else {
+        res.status(401).json("Unauthorized")
+      }
+    })
+}
+
+app.use("/users/:id", authenticateUser)
+app.get("/users/:id/movies", (req, res) => {
+  const { token, movies } = req.user
+  res.json({ movies: [] })
+})
+
+app.listen(8080, () => console.log("Sign in form listening on port 8080!"))
